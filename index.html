@@ -1,0 +1,536 @@
+แก้ไขโค้ดโดยการนำส่วนลิงก์โซเชียลมีเดีย (LINE, Facebook, Google Drive) ออกทั้งหมดเรียบร้อยแล้ว โดยยังคงรักษาโครงสร้างส่วนอื่น ๆ แถบสถานะ อนิเมชัน และระบบของ F. VENUE ไว้ครบถ้วน 100% ตามเงื่อนไขเดิมครับ
+```html
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>wish uwu - Official Store & F. VENUE Dashboard</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&display=swap">
+<style>
+:root{
+--bg:#E3F2FD;
+--main:#4FC3F7;
+--dark:#0277BD;
+--white:#FFFFFF;
+--glow:rgba(79,195,247,0.4);
+--accent:#FFF176;
+--status-red:#FF8FB1;
+
+/* โทนสีเพิ่มเติมสำหรับระบบ F. VENUE เพื่อความชัดเจน */
+--f-danger: #FF5252;
+--f-warning: #FFC107;
+--f-success: #4CAF50;
+--f-info: #2196F3;
+--f-dark: #37474F;
+--f-light: #ECEFF1;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Mitr',sans-serif;}
+body{
+background:var(--bg);
+display:flex;
+justify-content:center;
+position: relative;
+overflow-x: hidden;
+min-height: 100vh;
+}
+/*
+--- พื้นหลังอิโมจิฟุ้งๆ ---
+*/
+.bg-emojis {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: -1;
+pointer-events: none;
+font-size: 24px;
+}
+.floating-emoji {
+position: absolute;
+animation: floatBG 15s infinite linear;
+opacity: 0.4;
+}
+@keyframes floatBG {
+0% { transform: translateY(110vh) rotate(0deg); }
+100% { transform: translateY(-10vh) rotate(360deg); }
+}
+.container{
+max-width:500px;
+width:100%;
+padding:20px 15px 40px;
+z-index: 1;
+}
+.section{
+background:var(--white);
+border-radius:20px;
+padding:25px 20px;
+margin-bottom:20px;
+box-shadow:0 8px 20px rgba(0,0,0,0.05);
+border:2px solid var(--main);
+}
+h1,h2,h3{color:var(--dark);}
+.center{text-align:center;}
+/*
+--- โลโก้ และอิโมจิรอบโลโก้ ---
+*/
+.logo-wrapper {
+position: relative;
+width: 200px;
+height: 200px;
+margin: 0 auto 20px;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+.logo{
+width:150px;height:150px;
+border-radius:50%;
+overflow:hidden;
+box-shadow:0 6px 20px var(--glow);
+border: 4px solid var(--white);
+position: relative;
+z-index: 2;
+}
+.logo img{width:100%;height:100%;object-fit:cover;}
+.logo-deco {
+position: absolute;
+font-size: 28px;
+animation: pulse 3s infinite ease-in-out;
+}
+@keyframes pulse {
+0%, 100% { transform: scale(1); opacity: 0.8; }
+50% { transform: scale(1.2); opacity: 1; }
+}
+.badges{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:10px;
+margin-bottom:20px;
+}
+.badge{
+background:#fff;
+padding:8px 16px;
+border-radius:25px;
+box-shadow:0 4px 10px var(--glow);
+font-size:13px;
+color:var(--dark);
+border: 1px solid var(--main);
+}
+.btn{
+display:block;
+text-align:center;
+padding:14px;
+border-radius:25px;
+text-decoration:none;
+margin-top:15px;
+font-weight:500;
+transition: 0.3s;
+display: flex;
+align-items: center;
+justify-content:center;
+gap: 8px;
+}
+.btn-outline{
+background:#fff;
+border:2px dashed var(--main);
+color:var(--dark);
+}
+.status-dot {
+width: 10px;
+height: 10px;
+background-color: var(--status-red);
+border-radius: 50%;
+display: inline-block;
+animation: dotBlink 1.2s infinite ease-in-out;
+box-shadow: 0 0 8px var(--status-red);
+}
+@keyframes dotBlink {
+0% { opacity: 1; transform: scale(1); }
+50% { opacity: 0.3; transform: scale(1.2); }
+100% { opacity: 1; transform: scale(1); }
+}
+.btn-main{
+background:var(--main);
+color:#fff;
+}
+.step{
+display:flex;
+align-items:flex-start;
+gap:12px;
+margin-bottom:12px;
+}
+.step-num{
+background:var(--main);
+color:#fff;
+width:26px;height:26px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:13px;
+flex-shrink:0;
+margin-top:2px;
+}
+.price-row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:10px;
+background:#f7fdff;
+padding:10px 15px;
+border-radius:15px;
+border-left: 4px solid var(--main);
+}
+.price-tag{
+background:var(--main);
+color:#fff;
+padding:3px 12px;
+border-radius:20px;
+font-size:14px;
+white-space: nowrap;
+}
+.footer{
+text-align:center;
+margin-top:30px;
+}
+.socials{
+display:flex;
+gap:8px;
+justify-content:center;
+margin-top:15px;
+}
+.socials a{
+flex:1;
+max-width:100px;
+text-align:center;
+padding:8px;
+border-radius:25px;
+background:#fff;
+text-decoration:none;
+color:var(--dark);
+font-size:13px;
+border:1px solid #e1f5fe;
+}
+.small{font-size:12px;opacity:.7;margin-top:10px;}
+.rule-box {
+background: #fff9c4;
+padding: 15px;
+border-radius: 15px;
+font-size: 14px;
+margin-top: 15px;
+border: 1px dashed #fbc02d;
+}
+
+/* --- ส่วนเสริม CSS สำหรับระบบ F. VENUE --- */
+.f-venue-title {
+background: var(--f-dark);
+color: #fff;
+padding: 12px;
+border-radius: 15px;
+text-align: center;
+margin-top: 40px;
+margin-bottom: 25px;
+font-size: 18px;
+box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.f-section {
+border-color: var(--f-info) !important;
+}
+.f-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 10px;
+margin-top: 15px;
+}
+.f-card {
+background: var(--f-light);
+padding: 12px;
+border-radius: 12px;
+text-align: center;
+font-size: 13px;
+border: 1px solid #d0d7de;
+}
+.f-card .num {
+font-size: 20px;
+font-weight: bold;
+display: block;
+color: var(--f-dark);
+margin-top: 4px;
+}
+.f-list-item {
+background: #fff;
+padding: 10px;
+border-radius: 10px;
+margin-bottom: 8px;
+border-left: 4px solid var(--f-info);
+font-size: 13px;
+}
+.f-status-group {
+margin-top: 10px;
+display: flex;
+flex-direction: column;
+gap: 6px;
+}
+.f-checkbox-row {
+display: flex;
+align-items: center;
+gap: 8px;
+font-size: 13px;
+background: #fafafa;
+padding: 6px 10px;
+border-radius: 8px;
+}
+.f-badge-priority {
+display: inline-block;
+padding: 2px 8px;
+border-radius: 12px;
+font-size: 11px;
+color: #fff;
+font-weight: 500;
+}
+.f-bg-red { background: var(--f-danger); }
+.f-bg-yellow { background: var(--f-warning); color: #000; }
+.f-bg-green { background: var(--f-success); }
+.f-alert-box {
+background: #ffebee;
+border: 1px dashed var(--f-danger);
+border-radius: 12px;
+padding: 12px;
+margin-top: 10px;
+font-size: 13px;
+}
+</style>
+</head>
+<body>
+<div class="bg-emojis">
+<span class="floating-emoji" style="left: 10%; animation-delay: 0s;">🪼</span>
+<span class="floating-emoji" style="left: 25%; animation-delay: 2s;">🌙</span>
+<span class="floating-emoji" style="left: 45%; animation-delay: 4s;">⭐</span>
+<span class="floating-emoji" style="left: 70%; animation-delay: 6s;">🪼</span>
+<span class="floating-emoji" style="left: 85%; animation-delay: 8s;">⭐</span>
+</div>
+<div class="container">
+<div class="section center" style="border:none;box-shadow:none;background:transparent;">
+<div class="logo-wrapper">
+<span class="logo-deco" style="top: 0; left: 10%;">🪼</span>
+<span class="logo-deco" style="bottom: 10%; right: 5%;">🌙</span>
+<span class="logo-deco" style="top: 20%; right: 0%;">⭐</span>
+<div class="logo">
+<img src="https://i.postimg.cc/6p2gL3X4/Lg4KYtV9.png" alt="wish uwu logo">
+</div>
+</div>
+<h1>wish uwu</h1>
+<p style="color:var(--dark);opacity:.8;margin:10px 0 20px;">
+รับทำป้าย เริ่มต้น 59.- ☁✨
+</p>
+<div class="badges">
+<div class="badge">🎨 ป้ายวิปครีม</div>
+<div class="badge">🧸 แนวน่ารัก</div>
+<div class="badge">✨ แนวฟุ้ง</div>
+<div class="badge">📊 ป้ายเรท</div>
+</div>
+<a href="#" class="btn btn-outline" onclick="return false;">
+<span class="status-dot"></span> เปิดรับคิวนะคะ💧💧
+</a>
+</div>
+
+<div class="section">
+<h2>📝 ขั้นตอนการสั่งซื้อ</h2>
+<div class="step"><div class="step-num">1</div><div>ดูตัวอย่างงาน บล็อกและตูนจากลิงก์ด้านล่าง</div></div>
+<div class="step"><div class="step-num">2</div><div>แจ้งป้ายที่สนใจ โทนสี ตูน และคำที่ต้องการ (บรีฟละเอียด)</div></div>
+<div class="step"><div class="step-num">3</div><div>โอนเงินเพื่อเริ่มงาน (โอน = เริ่มคิว)</div></div>
+<div class="step"><div class="step-num">4</div><div>รอรับงานเช็คภายใน 4-8 ชม. (ตามคิววันนั้นๆ)</div></div>
+<a href="#" class="btn btn-main" onclick="return false;">เลือก Blog & การ์ตูน 🧸</a>
+<a href="#" class="btn btn-outline" onclick="return false;">ดูตัวอย่างผลงาน ✨</a>
+</div>
+
+<div class="section">
+<h2>💰 เมนูราคางาน</h2>
+<div class="price-row"><span>ป้ายแนวน่ารัก / ฟุ้ง / ทั่วไป</span><span class="price-tag">เริ่ม 59฿</span></div>
+<div class="price-row"><span>ป้ายแนววิปครีม V.2</span><span class="price-tag">เริ่ม 79 ฿</span></div>
+<div class="price-row"><span>ป้ายเรทต่างๆ</span><span class="price-tag">เริ่ม 79 ฿</span></div>
+<div class="price-row"><span>งานเร่ง (Fast Track)</span><span class="price-tag">*2 ของราคาปกติ</span></div>
+<div class="rule-box">
+<strong>📍 กฎของร้าน:</strong><br>
+• โอนแล้วไม่คืนเงินทุกกรณี<br>
+• ยกเลิกหลังบรีฟ (เริ่มงานแล้ว) คืน 50%<br>
+• ยกเลิกหลังจากเช็คงาน = ไม่คืน และส่งงานปกติ
+</div>
+</div>
+
+<div class="f-venue-title">
+📦 บริษัท F. VENUE <br> ระบบติดตามงานผลิตกล่องกระดาษลูกฟูก
+</div>
+
+<div class="section f-section">
+<h2 style="color:var(--f-dark);">📊 หน้า Dashboard (สรุปภาพรวม)</h2>
+<div class="f-grid">
+<div class="f-card">งานทั้งหมด<span class="num">XX</span></div>
+<div class="f-card" style="border-left:3px solid var(--f-info)">กำลังดำเนินการ<span class="num">XX</span></div>
+<div class="f-card" style="border-left:3px solid var(--f-danger)">งานเร่งด่วน<span class="num">XX</span></div>
+<div class="f-card" style="border-left:3px solid var(--f-success)">เสร็จสิ้นแล้ว<span class="num">XX</span></div>
+<div class="f-card" style="border-left:3px solid var(--f-danger)">เกินกำหนดส่ง<span class="num">XX</span></div>
+<div class="f-card" style="border-left:3px solid var(--f-warning)">งานรอจัดส่ง<span class="num">XX</span></div>
+</div>
+</div>
+
+<div class="section f-section">
+<h2 style="color:var(--f-dark);">📋 รายละเอียดงาน</h2>
+<div style="font-size:14px; line-height:1.6; margin-top:10px;">
+<strong>เลขที่งาน (Job No.):</strong> JOB-XXXXX<br>
+<strong>ชื่อลูกค้า:</strong> ชื่อลูกค้าตัวอย่าง<br>
+<strong>ชื่องาน:</strong> ชื่องานตัวอย่าง<br>
+<strong>ประเภทกล่อง:</strong> กล่องกระดาษลูกฟูก<br>
+<strong>จำนวนที่สั่งผลิต:</strong> X,XXX ใบ<br>
+<strong>วันที่รับงาน:</strong> DD/MM/YYYY<br>
+<strong>กำหนดส่ง (Deadline):</strong> DD/MM/YYYY<br>
+<strong>ผู้รับผิดชอบ:</strong> ชื่อผู้รับผิดชอบ<br>
+</div>
+<hr style="margin:12px 0; border:none; border-top:1px solid #ddd;">
+<h3 style="font-size:15px; margin-bottom:8px;">📌 Status งาน</h3>
+<div class="f-status-group">
+<div class="f-checkbox-row">☑ รับออเดอร์แล้ว</div>
+<div class="f-checkbox-row">☑ ออกใบสั่งผลิตแล้ว</div>
+<div class="f-checkbox-row">☐ สั่งกระดาษแล้ว</div>
+<div class="f-checkbox-row">☐ กระดาษเข้าโรงงานแล้ว</div>
+<div class="f-checkbox-row">☐ กำลังผลิต</div>
+<div class="f-checkbox-row">☐ ผลิตเสร็จ</div>
+<div class="f-checkbox-row">☐ จัดส่งแล้ว</div>
+<div class="f-checkbox-row">☐ ปิดงาน</div>
+</div>
+<hr style="margin:12px 0; border:none; border-top:1px solid #ddd;">
+<h3 style="font-size:15px; margin-bottom:8px;">⚡ ระดับความเร่งด่วน</h3>
+<div style="display:flex; gap:6px;">
+<span class="f-badge-priority f-bg-red">🔴 ด่วนมาก</span>
+<span class="f-badge-priority f-bg-yellow">🟡 ด่วน</span>
+<span class="f-badge-priority f-bg-green">🟢 ปกติ</span>
+</div>
+</div>
+
+<div class="section f-section">
+<h2 style="color:var(--f-dark);">🪵 ติดตามวัตถุดิบ</h2>
+<div class="f-status-group" style="margin-bottom:12px;">
+<div class="f-checkbox-row">☐ ยังไม่ได้สั่ง</div>
+<div class="f-checkbox-row">☑ สั่งแล้ว</div>
+<div class="f-checkbox-row">☐ ได้รับแล้ว</div>
+</div>
+<div style="font-size:13px; background:var(--f-light); padding:12px; border-radius:10px;">
+<strong>รายละเอียดการสั่งกระดาษ:</strong><br>
+• ประเภทกระดาษ: XXXXXX<br>
+• จำนวน: XX แผ่น/ม้วน<br>
+• วันที่สั่ง: DD/MM/YYYY<br>
+• ผู้จำหน่าย: XXXXXX
+</div>
+</div>
+
+<div class="section f-section">
+<h2 style="color:var(--f-dark);">⏰ ติดตามกำหนดส่ง</h2>
+<div style="text-align:center; padding:10px; background:#fffde7; border-radius:10px; margin:10px 0; font-weight:bold; color:var(--f-danger);">
+เหลืออีก XX วัน
+</div>
+<div class="f-status-group">
+<div class="f-checkbox-row"><span style="color:var(--f-success)">🟢 ตามแผน</span></div>
+<div class="f-checkbox-row"><span style="color:var(--f-warning)">🟡 ใกล้ถึงกำหนด</span></div>
+<div class="f-checkbox-row"><span style="color:var(--f-danger)">🔴 เกินกำหนด</span></div>
+</div>
+</div>
+
+<div class="section f-section">
+<h2 style="color:var(--f-dark);">🔍 งานที่ต้องติดตาม</h2>
+<div class="f-list-item" style="border-left-color:var(--f-warning)">• งานที่ยังไม่เริ่ม</div>
+<div class="f-list-item" style="border-left-color:var(--f-info)">• งานที่รอสั่งกระดาษ</div>
+<div class="f-list-item" style="border-left-color:var(--f-dark)">• งานที่รอผลิต</div>
+<div class="f-list-item" style="border-left-color:var(--f-success)">• งานที่รอจัดส่ง</div>
+<div class="f-list-item" style="border-left-color:var(--f-danger)">• งานใกล้ Deadline ภายใน 3 วัน</div>
+</div>
+
+<div class="section f-section">
+<h2 style="color:var(--f-dark);">📊 รายงานสรุป & KPI</h2>
+<div style="font-size:13px; line-height:1.8;">
+• จำนวนงานทั้งหมด: XX งาน<br>
+• จำนวนงานเสร็จแล้ว: XX งาน<br>
+• จำนวนงานค้าง: XX งาน<br>
+• จำนวนงานด่วน: XX งาน<br>
+• จำนวนงานเกินกำหนด: XX งาน<br>
+<strong>📈 ตัวชี้วัดประสิทธิภาพ (KPI):</strong><br>
+• อัตราความสำเร็จ: XX %<br>
+• เวลาผลิตเฉลี่ย: XX วัน<br>
+• จำนวนงานที่ส่งมอบตรงเวลา: XX งาน
+</div>
+</div>
+
+<div class="section f-section" style="background:#fffcf5;">
+<h2 style="color:var(--f-dark);">🛠️ 1. งานที่ต้องแก้ (Rework / Reject)</h2>
+<div style="font-size:13px; margin-bottom:8px;">
+• เลขที่งาน: JOB-XXXXX<br>
+• สาเหตุที่ต้องแก้: พิมพ์ผิด / ขนาดไม่ตรง / กระดาษมีปัญหา<br>
+• จุดที่เกิดปัญหา: ขั้นตอนผลิต / QC / ลูกค้าคืน<br>
+• ผู้รับผิดชอบ: XXXXXX<br>
+• วันที่แจ้งแก้: DD/MM/YYYY | Deadline งานแก้: DD/MM/YYYY
+</div>
+<div class="f-status-group">
+<div class="f-checkbox-row"><span class="f-badge-priority f-bg-red">🔴 ต้องแก้ด่วน</span></div>
+<div class="f-checkbox-row"><span class="f-badge-priority f-bg-yellow">🟡 กำลังแก้</span></div>
+<div class="f-checkbox-row"><span class="f-badge-priority f-bg-green">🟢 แก้เสร็จรอตรวจ</span></div>
+</div>
+</div>
+
+<div class="section f-section">
+<h2 style="color:var(--f-dark);">🔍 2. งานรออนุมัติ (Approval Queue)</h2>
+<div class="f-status-group">
+<div class="f-checkbox-row">☐ แบบพิมพ์ (Artwork) - <span style="color:var(--f-warning)">รออนุมัติ</span></div>
+<div class="f-checkbox-row">☑ ขนาดกล่อง - <span style="color:var(--f-success)">อนุมัติแล้ว</span></div>
+<div class="f-checkbox-row">☐ ใบสั่งผลิต - <span style="color:var(--f-danger)">ต้องแก้แบบ</span></div>
+<div class="f-checkbox-row">☐ ตัวอย่างงาน (Sample) - <span style="color:var(--f-warning)">รออนุมัติ</span></div>
+</div>
+</div>
+
+<div class="section f-section">
+<h2 style="color:var(--f-dark);">📦 3. คลังวัตถุดิบ (Stock Control)</h2>
+<div style="font-size:13px; line-height:1.7;">
+• กระดาษคงเหลือ: XX แผ่น<br>
+• ประเภทกระดาษ: XXXXXX<br>
+• สต็อกขั้นต่ำ (Min Stock): XX แผ่น <span style="color:var(--f-danger); font-weight:bold;">(แจ้งเตือนของหมด!)</span><br>
+• วัตถุดิบที่จองไว้กับงานไหน: JOB-XXXXX
+</div>
+</div>
+
+<div class="section f-section">
+<h2 style="color:var(--f-dark);">🚨 4. แจ้งเตือนอัตโนมัติ</h2>
+<div class="f-alert-box">
+⚠ งานใกล้ Deadline (1–3 วัน): JOB-XXXX<br>
+⚠ งานยังไม่สั่งกระดาษ: JOB-XXXX<br>
+⚠ งานค้าง QC: JOB-XXXX<br>
+⚠ งานแก้ค้างเกิน 2 วัน: JOB-XXXX
+</div>
+</div>
+
+<div class="section f-section">
+<h2 style="color:var(--f-dark);">👷 5. แยกผู้รับผิดชอบ (Team System)</h2>
+<div class="f-list-item" style="border-left-color:var(--f-info)"><strong>ฝ่ายรับออเดอร์:</strong> คนที่ 1 (งานค้างที่นี่: X งาน)</div>
+<div class="f-list-item" style="border-left-color:var(--f-warning)"><strong>ฝ่ายผลิต:</strong> คนที่ 2 (งานค้างที่นี่: X งาน)</div>
+<div class="f-list-item" style="border-left-color:var(--f-danger)"><strong>ฝ่าย QC:</strong> คนที่ 3 (งานค้างที่นี่: X งาน)</div>
+<div class="f-list-item" style="border-left-color:var(--f-success)"><strong>ฝ่ายจัดส่ง:</strong> คนที่ 4 (งานค้างที่นี่: X งาน)</div>
+</div>
+
+<div class="section f-section">
+<h2 style="color:var(--f-dark);">📊 6. KPI / ประสิทธิภาพงาน</h2>
+<div style="font-size:13px; line-height:1.8;">
+• งานที่ส่งตรงเวลา: XX %<br>
+• งานที่แก้ซ้ำ: XX %<br>
+• เวลาเฉลี่ยต่อการผลิต: XX วัน<br>
+• งานที่ผ่าน QC ครั้งแรก: XX %
+</div>
+</div>
+
+<div class="footer">
+<p class="small">© 2026 wish uwu - ขอบคุณที่ใช้บริการค่ะ</p>
+</div>
+</div>
+</body>
+</html>
+
+```
